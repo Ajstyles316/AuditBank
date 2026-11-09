@@ -1,0 +1,55 @@
+@host = http://localhost:5117
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "nombreUsuario": "admin", "password": "Admin#2026Seguro" }
+
+### Crear cuenta 1
+POST {{host}}/api/cuentas
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "numeroCuenta": "001-0001", "titular": "Juan Pérez", "tipo": "CajaAhorro", "moneda": "BOB", "saldoInicial": 1000 }
+
+### Crear cuenta 2
+POST {{host}}/api/cuentas
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "numeroCuenta": "001-0002", "titular": "María Gómez", "tipo": "CajaAhorro", "moneda": "BOB", "saldoInicial": 1000 }
+
+### Depósito de 500 en la cuenta 1
+POST {{host}}/api/transacciones
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "cuentaId": 1, "tipo": "Deposito", "monto": 500, "descripcion": "Depósito en ventanilla" }
+
+### Retiro de 200 de la cuenta 1
+POST {{host}}/api/transacciones
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "cuentaId": 1, "tipo": "Retiro", "monto": 200 }
+
+### Transferencia de 300 de la cuenta 1 a la 2
+POST {{host}}/api/transacciones
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "cuentaId": 1, "cuentaDestinoId": 2, "tipo": "Transferencia", "monto": 300 }
+
+### Retiro imposible (debe dar 400: saldo insuficiente)
+POST {{host}}/api/transacciones
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "cuentaId": 1, "tipo": "Retiro", "monto": 999999 }
+
+### Listar cuentas
+GET {{host}}/api/cuentas
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Listar transacciones con filtros
+GET {{host}}/api/transacciones?cuentaId=1&tipo=Retiro&pagina=1&tamanoPagina=10
+Authorization: Bearer {{login.response.body.$.token}}
