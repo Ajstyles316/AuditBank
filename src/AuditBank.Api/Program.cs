@@ -6,17 +6,22 @@ using AuditBank.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using AuditBank.Api.Services;
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-// Add services to the container.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUsuarioActual, UsuarioActual>();
+builder.Services.AddScoped<AuditoriaInterceptor>();
+
+builder.Services.AddDbContext<AppDbContext>((sp, options) =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
+           .AddInterceptors(sp.GetRequiredService<AuditoriaInterceptor>()));
 
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
 builder.Services.AddScoped<ICuentaService, CuentaService>();
 builder.Services.AddScoped<ITransaccionService, TransaccionService>();
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()!;

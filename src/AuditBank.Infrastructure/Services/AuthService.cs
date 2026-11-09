@@ -8,7 +8,8 @@ using AuditBank.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-
+using System.Text.Json;
+using AuditBank.Domain.Enums;
 namespace AuditBank.Infrastructure.Services;
 public class JwtSettings
 {
@@ -17,21 +18,41 @@ public class JwtSettings
     public string Audience { get; set; } = string.Empty;
     public int ExpiraMinutos { get; set; } = 60;
 }
-public class AuthService(AppDbContext db, IOptions<JwtSettings> jwtOptions) : IAuthService
+public class AuthService(AppDbContext db, IOptions<JwtSettings> jwtOptions, IUsuarioActual actual) : IAuthService
 {
     private readonly JwtSettings _jwt = jwtOptions.Value;
 
     public async Task<AuthResponse?> LoginAsync(LoginRequest request)
+{
+    var usuario = await db.Usuarios
+        .Include(u => u.Rol)
+        .FirstOrDefaultAsync(u => u.NombreUsuario == request.NombreUsuario && u.Activo);
+
+    if (usuario is null || !BCrypt.Net.BCrypt.Verify(request.Password, usuario.PasswordHash))
     {
-        var usuario = await db.Usuarios
-            .Include(u => u.Rol)
-            .FirstOrDefaultAsync(u => u.NombreUsuario == request.NombreUsuario && u.Activo);
-
-        if (usuario is null || !BCrypt.Net.BCrypt.Verify(request.Password, usuario.PasswordHash))
-            return null;
-
-        return GenerarToken(usuario);
+        await RegistrarAccesoAsync(AccionAuditoria.LoginFallido, usuario?.Id, request.NombreUsuario);
+        return null;
     }
+
+    await RegistrarAccesoAsync(AccionAuditoria.Login, usuario.Id, usuario.NombreUsuario);
+    return GenerarToken(usuario);
+}
+
+private async Task RegistrarAccesoAsync(AccionAuditoria accion, int? usuarioId, string nombreIntentado)
+{
+    var nombre = nombreIntentado.Length > 100 ? nombreIntentado[..100] : nombreIntentado;
+
+    db.RegistrosAuditoria.Add(new RegistroAuditoria
+    {
+        Accion = accion,
+        Entidad = nameof(Usuario),
+        EntidadId = usuarioId?.ToString(),
+        ValorNuevo = JsonSerializer.Serialize(new { usuario = nombre }),
+        UsuarioId = usuarioId,
+        DireccionIp = actual.DireccionIp
+    });
+    await db.SaveChangesAsync();
+}
 
     public async Task<(bool Ok, string? Error)> RegistrarAsync(RegistroRequest r)
     {
