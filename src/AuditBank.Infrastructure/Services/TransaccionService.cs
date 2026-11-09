@@ -5,10 +5,10 @@ using AuditBank.Domain.Entities;
 using AuditBank.Domain.Enums;
 using AuditBank.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.Extensions.Logging;
 namespace AuditBank.Infrastructure.Services;
 
-public class TransaccionService(AppDbContext db) : ITransaccionService
+public class TransaccionService(AppDbContext db, IMotorReglas motor, ILogger<TransaccionService> log) : ITransaccionService
 {
     private static readonly Expression<Func<Transaccion, TransaccionResponse>> Proyeccion = t =>
         new TransaccionResponse(
@@ -78,7 +78,15 @@ public class TransaccionService(AppDbContext db) : ITransaccionService
 
         db.Transacciones.Add(transaccion);
         await db.SaveChangesAsync(); // una sola llamada: todo o nada
-
+        try
+        {
+            await motor.EvaluarAsync(transaccion.Id);
+        }
+        catch (Exception ex)
+        {
+            // El fallo del monitoreo no debe impedir que la transacción quede registrada.
+            log.LogError(ex, "Falló el motor de reglas para la transacción {Id}", transaccion.Id);
+        }
         return (await ObtenerAsync(transaccion.Id), null);
     }
 
