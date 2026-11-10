@@ -30,7 +30,7 @@ builder.Services.AddScoped<ICuentaService, CuentaService>();
 builder.Services.AddScoped<ITransaccionService, TransaccionService>();
 builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
 builder.Services.AddScoped<IAlertaService, AlertaService>();
-
+builder.Services.AddScoped<IReglaService, ReglaService>();
 // --- Motor de reglas ---
 builder.Services.AddScoped<IEvaluadorRegla, MontoAltoEvaluador>();
 builder.Services.AddScoped<IEvaluadorRegla, FraccionamientoEvaluador>();

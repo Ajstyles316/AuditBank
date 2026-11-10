@@ -7,6 +7,8 @@ public class UsuarioActual(IHttpContextAccessor http) : IUsuarioActual
     public int? Id =>
         int.TryParse(http.HttpContext?.User.FindFirst("sub")?.Value, out var id) ? id : null;
 
+    public string? Rol => http.HttpContext?.User.FindFirst("role")?.Value;
+
     public string? DireccionIp =>
         http.HttpContext?.Connection.RemoteIpAddress?.ToString();
 }
