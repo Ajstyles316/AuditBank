@@ -11,6 +11,16 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("Default");
+if (string.IsNullOrWhiteSpace(connectionString))
+    throw new InvalidOperationException(
+        "Configure ConnectionStrings:Default para la base de datos de este entorno.");
+
+var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+if (jwt is null || string.IsNullOrWhiteSpace(jwt.Key) || Encoding.UTF8.GetByteCount(jwt.Key) < 32)
+    throw new InvalidOperationException(
+        "Configure Jwt:Key con una clave secreta de al menos 32 bytes mediante User Secrets o variables de entorno.");
+
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddOpenApi();
@@ -20,7 +30,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUsuarioActual, UsuarioActual>();
 builder.Services.AddScoped<AuditoriaInterceptor>();
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
+    options.UseSqlServer(connectionString)
            .AddInterceptors(sp.GetRequiredService<AuditoriaInterceptor>()));
 
 // --- Servicios ---
@@ -38,7 +48,6 @@ builder.Services.AddScoped<IEvaluadorRegla, FueraDeHorarioEvaluador>();
 builder.Services.AddScoped<IMotorReglas, MotorReglas>();
 builder.Services.AddScoped<IReporteService, ReporteService>();
 // --- Autenticación JWT ---
-var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
@@ -65,6 +74,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (app.Environment.IsDevelopment())
+        await db.Database.MigrateAsync();
     await DbSeeder.SembrarAdminAsync(db, builder.Configuration["SeedAdmin:Password"]);
 }
 
@@ -73,6 +84,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

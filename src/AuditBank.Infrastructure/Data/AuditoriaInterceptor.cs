@@ -122,6 +122,9 @@ public class AuditoriaInterceptor(IUsuarioActual usuarioActual) : SaveChangesInt
                         "La bitácora de auditoría es de solo lectura: no se puede modificar ni eliminar.");
                 continue;
             }
+            if (entry.Entity is Hallazgo && entry.State is (EntityState.Modified or EntityState.Deleted))
+                throw new InvalidOperationException(
+                        "Los hallazgos son de solo escritura: no se pueden modificar ni eliminar.");
 
             if (entry.State is not (EntityState.Added or EntityState.Modified or EntityState.Deleted))
                 continue;

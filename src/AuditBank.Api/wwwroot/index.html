@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>AuditBank | Centro de control</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <main id="login-screen" class="login-screen">
+    <section class="login-art">
+      <div class="brand brand-light"><span class="brand-mark">A</span><span>audit<span class="brand-muted">bank</span></span></div>
+      <div class="login-message">
+        <p class="eyebrow">AUDITORÍA INTELIGENTE</p>
+        <h1>Control claro.<br><span>Decisiones seguras.</span></h1>
+        <p>Un espacio de trabajo para vigilar operaciones, investigar alertas y mantener cada movimiento bajo control.</p>
+      </div>
+      <div class="login-art-footer"><span class="status-dot"></span> Plataforma de auditoría bancaria</div>
+      <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+    </section>
+    <section class="login-panel">
+      <div class="login-form-wrap">
+        <div class="brand brand-dark"><span class="brand-mark">A</span><span>audit<span class="brand-muted">bank</span></span></div>
+        <p class="eyebrow login-eyebrow">BIENVENIDO DE NUEVO</p>
+        <h2>Inicia sesión</h2>
+        <p class="login-subtitle">Ingresa tus credenciales para acceder al centro de control.</p>
+        <form id="login-form" class="stack-form">
+          <label>Usuario<input name="nombreUsuario" autocomplete="username" placeholder="Tu usuario" required></label>
+          <label>Contraseña<input name="password" type="password" autocomplete="current-password" placeholder="Tu contraseña" required></label>
+          <p id="login-error" class="form-error"></p>
+          <button class="button button-primary button-wide" type="submit">Entrar al sistema <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="login-footnote"><span class="lock-icon">⌑</span> Acceso protegido y monitoreado</p>
+      </div>
+      <span class="login-copyright">AUDITBANK · SISTEMA DE AUDITORÍA</span>
+    </section>
+  </main>
+
+  <div id="app-shell" class="app-shell hidden">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand brand-light"><span class="brand-mark">A</span><span>audit<span class="brand-muted">bank</span></span></div>
+        <button id="mobile-close" class="icon-button mobile-close" aria-label="Cerrar menú">×</button>
+      </div>
+      <div class="workspace-label">ESPACIO DE TRABAJO</div>
+      <nav class="nav-list" aria-label="Navegación principal">
+        <button class="nav-item active" data-page="inicio"><span class="nav-icon">⌂</span> Resumen</button>
+        <button class="nav-item" data-page="alertas"><span class="nav-icon">◈</span> Alertas <span id="nav-alert-count" class="nav-count">0</span></button>
+        <button class="nav-item" data-page="transacciones"><span class="nav-icon">↔</span> Transacciones</button>
+        <button class="nav-item" data-page="cuentas"><span class="nav-icon">▤</span> Cuentas</button>
+        <div class="nav-divider"></div>
+        <div class="workspace-label nav-section-label">CONTROL</div>
+        <button class="nav-item" data-page="reglas"><span class="nav-icon">⛭</span> Reglas de auditoría</button>
+        <button class="nav-item" data-page="auditoria"><span class="nav-icon">≡</span> Bitácora</button>
+        <button class="nav-item" data-page="reportes"><span class="nav-icon">▧</span> Reportes</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="security-card"><span class="security-icon">✳</span><div><strong>Monitoreo activo</strong><small>Motor de reglas en ejecución</small></div><span class="status-dot"></span></div>
+        <div class="sidebar-user">
+          <div id="user-avatar" class="avatar">A</div>
+          <div class="user-meta"><strong id="sidebar-username">Administrador</strong><small id="sidebar-role">Administrador</small></div>
+          <button id="logout-button" class="icon-button logout-button" title="Cerrar sesión" aria-label="Cerrar sesión">↪</button>
+        </div>
+      </div>
+    </aside>
+    <div id="sidebar-scrim" class="sidebar-scrim"></div>
+    <main class="main-area">
+      <header class="topbar">
+        <div class="topbar-left"><button id="mobile-menu" class="icon-button mobile-menu" aria-label="Abrir menú">☰</button><span class="breadcrumb">AuditBank <span>/</span> <strong id="breadcrumb-current">Resumen</strong></span></div>
+        <div class="topbar-right"><span class="live-label"><span class="status-dot"></span> Sistema operativo</span><span id="topbar-date" class="topbar-date"></span><div id="topbar-avatar" class="avatar avatar-small">A</div></div>
+      </header>
+      <div id="page-content" class="page-content"></div>
+    </main>
+  </div>
+</body>
+</html>

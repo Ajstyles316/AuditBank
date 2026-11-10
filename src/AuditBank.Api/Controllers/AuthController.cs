@@ -30,5 +30,10 @@ public class AuthController(IAuthService auth) : ControllerBase
     [HttpGet("yo")]
     [Authorize]
     public IActionResult Yo() =>
-        Ok(new { usuario = User.Identity?.Name, rol = User.FindFirst("role")?.Value });
+        Ok(new
+        {
+            id = int.TryParse(User.FindFirst("sub")?.Value, out var id) ? id : (int?)null,
+            usuario = User.Identity?.Name,
+            rol = User.FindFirst("role")?.Value
+        });
 }
