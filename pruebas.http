@@ -53,3 +53,23 @@ Authorization: Bearer {{login.response.body.$.token}}
 ### Listar transacciones con filtros
 GET {{host}}/api/transacciones?cuentaId=1&tipo=Retiro&pagina=1&tamanoPagina=10
 Authorization: Bearer {{login.response.body.$.token}}
+
+### Transacciones en Excel
+GET {{host}}/api/reportes/transacciones?formato=Excel
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Transacciones en PDF, solo retiros
+GET {{host}}/api/reportes/transacciones?formato=Pdf&tipo=Retiro
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Alertas altas en Excel
+GET {{host}}/api/reportes/alertas?formato=Excel&severidad=Alta
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Bitácora en PDF
+GET {{host}}/api/reportes/auditoria?formato=Pdf
+Authorization: Bearer {{login.response.body.$.token}}
+
+### La exportación quedó registrada
+GET {{host}}/api/auditoria?accion=Exportar
+Authorization: Bearer {{login.response.body.$.token}}

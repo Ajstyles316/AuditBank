@@ -5,5 +5,6 @@ public enum AccionAuditoria
     Modificar = 2,
     Eliminar = 3,
     Login = 4,
-    LoginFallido = 5
+    LoginFallido = 5,
+    Exportar = 6
 }

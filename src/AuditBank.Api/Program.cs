@@ -36,7 +36,7 @@ builder.Services.AddScoped<IEvaluadorRegla, MontoAltoEvaluador>();
 builder.Services.AddScoped<IEvaluadorRegla, FraccionamientoEvaluador>();
 builder.Services.AddScoped<IEvaluadorRegla, FueraDeHorarioEvaluador>();
 builder.Services.AddScoped<IMotorReglas, MotorReglas>();
-
+builder.Services.AddScoped<IReporteService, ReporteService>();
 // --- Autenticación JWT ---
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()!;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

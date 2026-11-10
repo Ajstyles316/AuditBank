@@ -34,7 +34,7 @@ public class AlertaService(AppDbContext db, IUsuarioActual actual) : IAlertaServ
 
         var total = await q.CountAsync();
         var items = await q
-            .OrderByDescending(a => a.Severidad).ThenByDescending(a => a.CreadaEn)
+            .OrderByDescending(a => a.Severidad).ThenByDescending(a => a.CreadaEn).ThenByDescending(a => a.Id)
             .Skip((pagina - 1) * tamano).Take(tamano)
             .Select(Proyeccion)
             .ToListAsync();
